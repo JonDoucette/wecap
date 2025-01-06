@@ -1,2 +1,2 @@
-# wecap
+# Wecap
 Weekly Accomplishment Recap
