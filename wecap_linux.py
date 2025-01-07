@@ -61,6 +61,7 @@ class GUIManager(QMainWindow):
 
         # Main Screen
         self.main_screen = QWidget()
+        self.top_bar = QHBoxLayout()
         self.main_layout = QVBoxLayout()
 
         self.date_input = QDateEdit(QDate.currentDate())
@@ -79,21 +80,30 @@ class GUIManager(QMainWindow):
         background-color: red;
         ''')
 
-        self.main_layout.addWidget(self.close_main_button, alignment=Qt.AlignTop | Qt.AlignRight)
-        self.main_layout.addWidget(QLabel("Date:"))
-        self.main_layout.addWidget(self.date_input)
+        #Top Bar
+        #self.top_bar.addWidget(self.close_main_button, alignment=Qt.AlignTop | Qt.AlignRight)
+        self.top_bar.addWidget(self.close_main_button)
+        self.top_bar.addWidget(QLabel("Date:"))
+        self.top_bar.addWidget(self.date_input)
+
+        #self.main_layout.addWidget(self.close_main_button, alignment=Qt.AlignTop | Qt.AlignRight)
+        #self.main_layout.addWidget(QLabel("Date:"))
+        #self.main_layout.addWidget(self.date_input)
         self.main_layout.addWidget(QLabel("Accomplishment:"))
         self.main_layout.addWidget(self.accomplishment_input)
         self.main_layout.addWidget(self.add_button)
         self.main_layout.addWidget(self.past_submissions_button)
         #self.main_layout.addWidget(self.close_main_button, alignment=Qt.AlignTop | Qt.AlignRight)
 
-        self.main_screen.setLayout(self.main_layout)
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(self.top_bar)
+        main_layout.addLayout(self.main_layout)
+
+        self.main_screen.setLayout(main_layout)
 
         # Past Submissions Screen
         self.past_submissions_screen = QWidget()
         self.past_layout = QVBoxLayout()
-
 
         self.filter_layout = QHBoxLayout()
 
