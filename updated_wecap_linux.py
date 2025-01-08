@@ -1,15 +1,15 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QPushButton,
-    QTextEdit, QDateEdit, QTableWidget, QTableWidgetItem, QStackedWidget, QHBoxLayout
+    QApplication, QMainWindow, QWidget,
+    QTableWidgetItem, QStackedWidget, QVBoxLayout
 )
-from PyQt5.QtCore import QDate, Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
 from wecap_linx_stylesheet import STYLESHEET
 
 from screens.main_screen import MainScreen
 from screens.past_submissions_screen import PastSubmissionsScreen
 from screens.detail_view_screen import DetailScreen
+from screens.title_bar import CustomTitleBar
 from database_manager import DatabaseManager
 
 class GUIManager(QMainWindow):
@@ -19,26 +19,38 @@ class GUIManager(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Wecap - Linux")
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setGeometry(100, 100, 800, 600)
         self.init_ui()
         self.apply_styles()
 
     def init_ui(self):
         """Initializes the user interface components."""
-        self.stacked_widget = QStackedWidget()
+        # Central widget and main layout
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
 
+        self.main_layout = QVBoxLayout(self.central_widget)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Add custom title bar
+        self.title_bar = CustomTitleBar(self)
+        self.main_layout.addWidget(self.title_bar)
+
+        # Add stacked widget for the screens
+        self.stacked_widget = QStackedWidget()
+        self.main_layout.addWidget(self.stacked_widget)
+
+        # Add screens to the stacked widget
         self.main_screen = MainScreen(db_manager)
         self.past_submissions_screen = PastSubmissionsScreen(db_manager)
         self.detail_screen = DetailScreen(db_manager)
 
-        # Add screens to stacked widget
         self.stacked_widget.addWidget(self.main_screen)
         self.stacked_widget.addWidget(self.past_submissions_screen)
         self.stacked_widget.addWidget(self.detail_screen)
 
         self.init_buttons()
-
-        self.setCentralWidget(self.stacked_widget)
 
         self.refresh_table()
 
