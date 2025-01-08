@@ -18,7 +18,7 @@ QMainWindow {
                 font-family: 'Segoe UI', sans-serif;
                 font-size: 14px;
                 color: white;
-                padding: 10px;
+                padding: 15px;
                 margin: 5px 0;
             }
 
