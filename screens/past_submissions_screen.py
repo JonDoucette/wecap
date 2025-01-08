@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 
 class PastSubmissionsScreen(QWidget):
     def __init__(self, db_manager):
@@ -16,6 +16,11 @@ class PastSubmissionsScreen(QWidget):
         self.start_date_input.setCalendarPopup(True)
         self.end_date_input = QDateEdit(QDate.currentDate())
         self.end_date_input.setCalendarPopup(True)
+        self.close_button = QPushButton("X")
+        self.close_button.setStyleSheet('''
+        background-color: red;
+        ''')
+
 
         # Filter button
         self.filter_button = QPushButton("Filter")
@@ -32,6 +37,7 @@ class PastSubmissionsScreen(QWidget):
         self.filter_layout.addWidget(QLabel("End Date:"))
         self.filter_layout.addWidget(self.end_date_input)
         self.filter_layout.addWidget(self.filter_button)
+        self.filter_layout.addWidget(self.close_button, alignment=Qt.AlignRight)
 
         self.back_button = QPushButton("Back")
 
@@ -49,7 +55,7 @@ class PastSubmissionsScreen(QWidget):
         end_date = self.end_date_input.date().toString("yyyy-MM-dd")
         data = self.db_manager.get_accomplishments(start_date, end_date)
         self.past_table.setRowCount(len(data))
-        for row_idx, (date, accomplishment) in enumerate(data):
+        for row_idx, (id_, date, accomplishment) in enumerate(data):
             self.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
             self.past_table.setItem(row_idx, 1, QTableWidgetItem(accomplishment))
 

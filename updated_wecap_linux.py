@@ -31,14 +31,12 @@ class GUIManager(QMainWindow):
         self.past_submissions_screen = PastSubmissionsScreen(db_manager)
         self.detail_screen = DetailScreen(db_manager)
 
-
-        self.init_buttons()
-
-
         # Add screens to stacked widget
         self.stacked_widget.addWidget(self.main_screen)
         self.stacked_widget.addWidget(self.past_submissions_screen)
         self.stacked_widget.addWidget(self.detail_screen)
+
+        self.init_buttons()
 
         self.setCentralWidget(self.stacked_widget)
 
@@ -50,7 +48,8 @@ class GUIManager(QMainWindow):
         self.main_screen.past_submissions_button.clicked.connect(self.show_past_submissions)
         self.past_submissions_screen.past_table.itemDoubleClicked.connect(self.open_detail_window)
         self.past_submissions_screen.back_button.clicked.connect(self.show_main_screen)
-        self.detail_screen.back_button.clicked.connect(self.return_to_table_view)
+        self.past_submissions_screen.close_button.clicked.connect(self.close)
+        self.detail_screen.back_button.clicked.connect(self.show_past_submissions)
         self.detail_screen.delete_button.clicked.connect(self.delete_item)
 
     def apply_styles(self):
@@ -67,36 +66,14 @@ class GUIManager(QMainWindow):
             self.accomplishment_input.clear()
 
     def show_past_submissions(self):
-        """Switches to the Past Submissions screen and refreshes the table."""
         self.refresh_table()
         self.stacked_widget.setCurrentWidget(self.past_submissions_screen)
 
     def show_main_screen(self):
-        """Switches back to the Main screen."""
         self.stacked_widget.setCurrentWidget(self.main_screen)
 
     def show_detail_screen(self):
-        # Switch to the detail view
         self.stacked_widget.setCurrentWidget(self.detail_screen)
-
-    def setup_detail_view(self):
-        layout = QVBoxLayout()
-
-        #Add labels to display the details
-        self.detail_label = QLabel("Details:")
-        layout.addWidget(self.detail_label)
-
-        # Back button to return to the table view
-        back_button = QPushButton("Back")
-        back_button.clicked.connect(self.return_to_table_view)
-        layout.addWidget(back_button)
-
-        # Delete button to delete the current item
-        self.delete_button = QPushButton("Delete Item")
-        self.delete_button.clicked.connect(self.delete_item)
-        layout.addWidget(self.delete_button)
-
-        self.detail_view.setLayout(layout)
 
     def delete_item(self):
         db_manager.delete_accomplishment(self.past_submissions_screen.past_table.item(self.current_row, 0).data(Qt.UserRole))
@@ -113,11 +90,6 @@ class GUIManager(QMainWindow):
         self.detail_screen.detail_label.setText(f"Details:\n{self.current_item_data}")
         self.show_detail_screen()
 
-
-    def return_to_table_view(self):
-        self.stacked_widget.setCurrentWidget(self.past_submissions_screen)
-
-
     def refresh_table(self):
         """Refreshes the table to display the latest accomplishments."""
         data = db_manager.get_accomplishments()
@@ -129,20 +101,9 @@ class GUIManager(QMainWindow):
             #Store the Id as hidden data in the first column's item
             self.past_submissions_screen.past_table.item(row_idx, 0).setData(Qt.UserRole, id_)
 
-
         # Adjust header and fill empty space
         self.past_submissions_screen.past_table.horizontalHeader().setStretchLastSection(True)
         self.past_submissions_screen.past_table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
-
-    def filter_accomplishments(self):
-        """Filters accomplishments based on selected date range."""
-        start_date = self.start_date_input.date().toString("yyyy-MM-dd")
-        end_date = self.end_date_input.date().toString("yyyy-MM-dd")
-        data = db_manager.get_accomplishments(start_date, end_date)
-        self.past_submissions_screen.past_table.setRowCount(len(data))
-        for row_idx, (date, accomplishment) in enumerate(data):
-            self.past_submissions_screen.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
-            self.past_submissions_screen.past_table.setItem(row_idx, 1, QTableWidgetItem(accomplishment))
 
 def main():
     """Main function to initialize the application."""
