@@ -16,11 +16,6 @@ class PastSubmissionsScreen(QWidget):
         self.start_date_input.setCalendarPopup(True)
         self.end_date_input = QDateEdit(QDate.currentDate())
         self.end_date_input.setCalendarPopup(True)
-        self.close_button = QPushButton("X")
-        self.close_button.setStyleSheet('''
-        background-color: red;
-        ''')
-
 
         # Filter button
         self.filter_button = QPushButton("Filter")
@@ -37,7 +32,6 @@ class PastSubmissionsScreen(QWidget):
         self.filter_layout.addWidget(QLabel("End Date:"))
         self.filter_layout.addWidget(self.end_date_input)
         self.filter_layout.addWidget(self.filter_button)
-        self.filter_layout.addWidget(self.close_button, alignment=Qt.AlignRight)
 
         self.back_button = QPushButton("Back")
 

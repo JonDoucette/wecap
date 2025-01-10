@@ -15,11 +15,6 @@ class MainScreen(QWidget):
         self.date_input = QDateEdit(QDate.currentDate())
         self.date_input.setCalendarPopup(True)
 
-        self.close_main_button = QPushButton("X")
-        self.close_main_button.setStyleSheet('''
-        background-color: red;
-        ''')
-
         self.accomplishment_input = QTextEdit()
         self.add_button = QPushButton("Add Accomplishment")
         self.add_button.clicked.connect(self.add_accomplishment)
@@ -28,7 +23,6 @@ class MainScreen(QWidget):
 
         self.top_bar.addWidget(QLabel("Date:"))
         self.top_bar.addWidget(self.date_input)
-        self.top_bar.addWidget(self.close_main_button, alignment=Qt.AlignRight)
 
         self.main_layout.addWidget(QLabel("Accomplishment:"))
         self.main_layout.addWidget(self.accomplishment_input)

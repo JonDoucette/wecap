@@ -56,11 +56,9 @@ class GUIManager(QMainWindow):
 
     def init_buttons(self):
         #Buttons
-        self.main_screen.close_main_button.clicked.connect(self.close)
         self.main_screen.past_submissions_button.clicked.connect(self.show_past_submissions)
         self.past_submissions_screen.past_table.itemDoubleClicked.connect(self.open_detail_window)
         self.past_submissions_screen.back_button.clicked.connect(self.show_main_screen)
-        self.past_submissions_screen.close_button.clicked.connect(self.close)
         self.detail_screen.back_button.clicked.connect(self.show_past_submissions)
         self.detail_screen.delete_button.clicked.connect(self.delete_item)
 

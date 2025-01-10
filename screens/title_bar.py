@@ -8,16 +8,22 @@ class CustomTitleBar(QWidget):
         self.parent = parent  # Reference to the parent window
         self.setStyleSheet("""
             QWidget {
-                background-color: #2e3440;
+                background-color: #1e1e2f;
                 color: white;
             }
+            QPushButton {
+                background-color: #2e3440;
+                color: white;
+                border: none;
+                padding: 0px;
+            }
         """)
-        self.setFixedHeight(30)
+        self.setFixedHeight(40)
         self._startPos = None  # For dragging the window
 
         # Layout for the title bar
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setContentsMargins(0, 0, 5, 0)
         self.layout.setSpacing(5)
 
         # Title text
@@ -27,13 +33,13 @@ class CustomTitleBar(QWidget):
 
         # Minimize button
         self.minimize_button = QPushButton("-")
-        self.minimize_button.setFixedSize(25, 25)
+        self.minimize_button.setFixedSize(30, 30)
         self.minimize_button.clicked.connect(self.minimize_window)
         self.layout.addWidget(self.minimize_button)
 
         # Close button
         self.close_button = QPushButton("x")
-        self.close_button.setFixedSize(25, 25)
+        self.close_button.setFixedSize(30, 30)
         self.close_button.clicked.connect(self.close_window)
         self.layout.addWidget(self.close_button)
 
