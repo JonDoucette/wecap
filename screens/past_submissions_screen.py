@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
 from PyQt5.QtCore import QDate, Qt
 
 class PastSubmissionsScreen(QWidget):
@@ -23,8 +23,10 @@ class PastSubmissionsScreen(QWidget):
 
         # Past accomplishments table
         self.past_table = QTableWidget()
-        self.past_table.setColumnCount(2)
-        self.past_table.setHorizontalHeaderLabels(["Date", "Accomplishment"])
+        self.past_table.setColumnCount(3)
+        self.past_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.past_table.setSortingEnabled(True)
+        self.past_table.setHorizontalHeaderLabels(["Date", "Type", "Details"])
 
         # Filter layout
         self.filter_layout.addWidget(QLabel("Start Date:"))
@@ -47,9 +49,20 @@ class PastSubmissionsScreen(QWidget):
         """Filters accomplishments based on selected date range."""
         start_date = self.start_date_input.date().toString("yyyy-MM-dd")
         end_date = self.end_date_input.date().toString("yyyy-MM-dd")
-        data = self.db_manager.get_accomplishments(start_date, end_date)
-        self.past_table.setRowCount(len(data))
-        for row_idx, (id_, date, accomplishment) in enumerate(data):
+        accomplishment_data = self.db_manager.get_accomplishments(start_date, end_date)
+        blocker_data = self.db_manager.get_blockers(start_date, end_date)
+
+        combined_data = [
+        (id_, date, "Accomplishment", content)
+        for id_, date, content in accomplishment_data
+        ] + [
+        (id_, date, "Blocker", content)
+        for id_, date, content in blocker_data
+        ]
+
+        self.past_table.setRowCount(len(combined_data))
+        for row_idx, (id_, date, item_type, item) in enumerate(combined_data):
             self.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
-            self.past_table.setItem(row_idx, 1, QTableWidgetItem(accomplishment))
+            self.past_table.setItem(row_idx, 1, QTableWidgetItem(item_type))
+            self.past_table.setItem(row_idx, 2, QTableWidgetItem(item))
 

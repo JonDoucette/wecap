@@ -23,6 +23,7 @@ class DetailScreen(QWidget):
         # Delete button to delete the current item
         self.delete_button = QPushButton("Delete Item")
         self.layout.addWidget(self.delete_button)
+        self.delete_button.clicked.connect(self.delete_item)
 
         self.setLayout(self.layout)
 
@@ -30,6 +31,8 @@ class DetailScreen(QWidget):
         self.current_row = current_row
 
     def delete_item(self):
-        self.db_manager.delete_accomplishment(self.past_submissions_screen.past_table.item(self.current_row, 0).data(Qt.UserRole))
-        self.show_past_submissions()
+        if self.item_type == "Accomplishment":
+            self.db_manager.delete_accomplishment(self.item_id)
+        if self.item_type == "Blocker":
+            self.db_manager.delete_blocker(self.item_id)
 

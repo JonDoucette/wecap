@@ -16,8 +16,10 @@ class MainScreen(QWidget):
         self.date_input.setCalendarPopup(True)
 
         self.accomplishment_input = QTextEdit()
+        self.blocker_input = QTextEdit()
+
         self.add_button = QPushButton("Add Accomplishment")
-        self.add_button.clicked.connect(self.add_accomplishment)
+        self.add_button.clicked.connect(self.add_items)
 
         self.past_submissions_button = QPushButton("Past Submissions")
 
@@ -26,6 +28,10 @@ class MainScreen(QWidget):
 
         self.main_layout.addWidget(QLabel("Accomplishment:"))
         self.main_layout.addWidget(self.accomplishment_input)
+
+        self.main_layout.addWidget(QLabel("Blocker:"))
+        self.main_layout.addWidget(self.blocker_input)
+
         self.main_layout.addWidget(self.add_button)
         self.main_layout.addWidget(self.past_submissions_button)
 
@@ -35,12 +41,18 @@ class MainScreen(QWidget):
 
         self.setLayout(main_layout)
 
-    def add_accomplishment(self):
-        """Adds a new accomplishment to the database."""
+    def add_items(self):
+        """Adds a new accomplishment or blocker to the database."""
         selected_date = self.date_input.date()
         date = selected_date.toString("yyyy-MM-dd")
         accomplishment = self.accomplishment_input.toPlainText().strip()
+        blocker = self.blocker_input.toPlainText().strip()
         if accomplishment:
             self.db_manager.add_accomplishment(date, accomplishment)
             self.accomplishment_input.clear()
+
+        if blocker:
+            self.db_manager.add_blocker(date, blocker)
+            self.blocker_input.clear()
+
 

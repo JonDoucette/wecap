@@ -68,6 +68,11 @@ QMainWindow {
                 padding: 5px;
             }
 
+            QHeaderView{
+                background-color: #4caf50;
+                color: white;
+            }
+
             QTableWidget::item:selected {
                 background-color: #4caf50;
                 color: white;

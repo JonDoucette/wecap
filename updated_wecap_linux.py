@@ -60,20 +60,11 @@ class GUIManager(QMainWindow):
         self.past_submissions_screen.past_table.itemDoubleClicked.connect(self.open_detail_window)
         self.past_submissions_screen.back_button.clicked.connect(self.show_main_screen)
         self.detail_screen.back_button.clicked.connect(self.show_past_submissions)
-        self.detail_screen.delete_button.clicked.connect(self.delete_item)
+        self.detail_screen.delete_button.clicked.connect(self.show_past_submissions)
 
     def apply_styles(self):
         """Applies inline styling."""
         self.setStyleSheet(STYLESHEET)
-
-    def add_accomplishment(self):
-        """Adds a new accomplishment to the database."""
-        selected_date = self.date_input.date()
-        date = selected_date.toString("yyyy-MM-dd")
-        accomplishment = self.accomplishment_input.toPlainText().strip()
-        if accomplishment:
-            db_manager.add_accomplishment(date, accomplishment)
-            self.accomplishment_input.clear()
 
     def show_past_submissions(self):
         self.refresh_table()
@@ -85,35 +76,51 @@ class GUIManager(QMainWindow):
     def show_detail_screen(self):
         self.stacked_widget.setCurrentWidget(self.detail_screen)
 
-    def delete_item(self):
-        db_manager.delete_accomplishment(self.past_submissions_screen.past_table.item(self.current_row, 0).data(Qt.UserRole))
-        self.show_past_submissions()
-
     def open_detail_window(self, item):
         # Get data of the clicked row
         self.current_row = item.row()
         date = self.past_submissions_screen.past_table.item(self.current_row, 0).text()
-        accomplishment = self.past_submissions_screen.past_table.item(self.current_row, 1).text()
+        item_type = self.past_submissions_screen.past_table.item(self.current_row, 1).text()
+        accomplishment = self.past_submissions_screen.past_table.item(self.current_row, 2).text()
         self.current_item_data = f"Date: {date}, Accomplishment: {accomplishment}"
 
         # Update the detail view
+        self.detail_screen.item_id = self.past_submissions_screen.past_table.item(self.current_row, 0).data(Qt.UserRole)
+        self.detail_screen.item_type = item_type 
         self.detail_screen.detail_label.setText(f"Details:\n{self.current_item_data}")
         self.show_detail_screen()
 
     def refresh_table(self):
-        """Refreshes the table to display the latest accomplishments."""
-        data = db_manager.get_accomplishments()
-        self.past_submissions_screen.past_table.setRowCount(len(data))
-        for row_idx, (id_, date, accomplishment) in enumerate(data):
-            self.past_submissions_screen.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
-            self.past_submissions_screen.past_table.setItem(row_idx, 1, QTableWidgetItem(accomplishment))
+        """Refreshes the table to display the latest accomplishments and blockers."""
+        accomplishment_data = db_manager.get_accomplishments()
+        blocker_data = db_manager.get_blockers()
+        row_length = len(blocker_data) + len(accomplishment_data)
 
-            #Store the Id as hidden data in the first column's item
+        self.past_submissions_screen.past_table.setRowCount(row_length)
+
+        # Populate accomplishments
+        for row_idx, (id_, date, accomplishment) in enumerate(accomplishment_data):
+            self.past_submissions_screen.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
+            self.past_submissions_screen.past_table.setItem(row_idx, 1, QTableWidgetItem("Accomplishment"))
+            self.past_submissions_screen.past_table.setItem(row_idx, 2, QTableWidgetItem(accomplishment))
+
+            # Store the ID as hidden data in the first column's item
+            self.past_submissions_screen.past_table.item(row_idx, 0).setData(Qt.UserRole, id_)
+
+        # Populate blockers
+        for row_idx, (id_, date, blocker) in enumerate(blocker_data):
+            row_idx += len(accomplishment_data)
+            self.past_submissions_screen.past_table.setItem(row_idx, 0, QTableWidgetItem(date))
+            self.past_submissions_screen.past_table.setItem(row_idx, 1, QTableWidgetItem("Blocker"))
+            self.past_submissions_screen.past_table.setItem(row_idx, 2, QTableWidgetItem(blocker))
+
+            # Store the ID as hidden data in the first column's item
             self.past_submissions_screen.past_table.item(row_idx, 0).setData(Qt.UserRole, id_)
 
         # Adjust header and fill empty space
         self.past_submissions_screen.past_table.horizontalHeader().setStretchLastSection(True)
         self.past_submissions_screen.past_table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
+
 
 def main():
     """Main function to initialize the application."""
