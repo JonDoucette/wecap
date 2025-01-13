@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont
 
 class CustomTitleBar(QWidget):
@@ -23,8 +23,13 @@ class CustomTitleBar(QWidget):
 
         # Layout for the title bar
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 5, 0)
+        self.layout.setContentsMargins(5, 5, 10, 5)
         self.layout.setSpacing(5)
+
+        # Placeholder to balance the layout on the left
+        left_placeholder = QWidget(self)
+        left_placeholder.setFixedWidth(60)  # Width of minimize and close buttons
+        self.layout.addWidget(left_placeholder)
 
         # Title text
         self.title_label = QLabel("Wecap", alignment=Qt.AlignCenter)

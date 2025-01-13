@@ -1,6 +1,7 @@
 STYLESHEET = '''
 QMainWindow {
                 background-color: #1e1e2f;
+                border: 2px solid white;
                 color: #e0e0e0;
             }
 
