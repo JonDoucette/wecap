@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
 from PyQt5.QtCore import QDate, Qt
 
@@ -66,3 +67,20 @@ class PastSubmissionsScreen(QWidget):
             self.past_table.setItem(row_idx, 1, QTableWidgetItem(item_type))
             self.past_table.setItem(row_idx, 2, QTableWidgetItem(item))
 
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Delete:
+            row = self.past_table.currentRow()
+            item_type = self.past_table.item(row, 1).text()
+            item_id = self.past_table.item(row, 0).data(Qt.UserRole)
+            self.past_table.removeRow(row)
+
+            match item_type:
+                case "Accomplishment":
+                    self.db_manager.delete_accomplishment(item_id)
+                case "Blocker":
+                    self.db_manager.delete_blocker(item_id)
+                case _:
+                    return
+
+        else:
+            super().keyPressEvent(event)
