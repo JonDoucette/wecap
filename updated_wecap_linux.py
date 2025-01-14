@@ -11,6 +11,7 @@ from screens.past_submissions_screen import PastSubmissionsScreen
 from screens.detail_view_screen import DetailScreen
 from screens.title_bar import CustomTitleBar
 from database_manager import DatabaseManager
+from classes.item import Item
 
 class GUIManager(QMainWindow):
     """
@@ -79,14 +80,13 @@ class GUIManager(QMainWindow):
     def open_detail_window(self, item):
         # Get data of the clicked row
         self.current_row = item.row()
-        date = self.past_submissions_screen.past_table.item(self.current_row, 0).text()
-        item_type = self.past_submissions_screen.past_table.item(self.current_row, 1).text()
-        accomplishment = self.past_submissions_screen.past_table.item(self.current_row, 2).text()
-        self.current_item_data = f"Date: {date}, Accomplishment: {accomplishment}"
+
+        item = Item.from_table_row(self.past_submissions_screen.past_table, self.current_row)
+        self.current_item_data = f"Date: {item.date}, {item.type}: {item.comment}"
 
         # Update the detail view
         self.detail_screen.item_id = self.past_submissions_screen.past_table.item(self.current_row, 0).data(Qt.UserRole)
-        self.detail_screen.item_type = item_type 
+        self.detail_screen.item_type = item.type 
         self.detail_screen.detail_label.setText(f"Details:\n{self.current_item_data}")
         self.show_detail_screen()
 
