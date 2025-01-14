@@ -98,6 +98,9 @@ class PastSubmissionsScreen(QWidget):
         if event.key() == QtCore.Qt.Key_Delete:
             row = self.past_table.currentRow()
             self.deleteItem(row); 
+        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
+            row = self.past_table.currentRow()
+            self.copyItem(row)
         else:
             super().keyPressEvent(event)
     
