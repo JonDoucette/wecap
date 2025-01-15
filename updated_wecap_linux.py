@@ -12,6 +12,8 @@ from screens.detail_view_screen import DetailScreen
 from screens.title_bar import CustomTitleBar
 from database_manager import DatabaseManager
 from classes.item import Item
+from classes.notificationHandler import NotificationHandler
+from classes.systemTray import SystemTray
 
 class GUIManager(QMainWindow):
     """
@@ -128,9 +130,12 @@ def main():
     db_manager = DatabaseManager()
     app = QApplication(sys.argv)
     gui = GUIManager()
+    system_tray = SystemTray('assets/imgs/main_screen.png', gui) 
+    notification_handler = NotificationHandler(gui, db_manager, system_tray)  
+    notification_handler.check_and_notify(True)
     gui.show()
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    main();
+    main()

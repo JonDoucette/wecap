@@ -69,4 +69,13 @@ class DatabaseManager:
         self.connection.execute(query)
         self.connection.commit()
 
+    def get_count_of_entries_between_times(self, start_date, end_date):
+        cursor = self.connection.cursor()
+        query = """
+        SELECT COUNT(*) FROM accomplishments
+        WHERE date >= ? AND date <= ?
+        """
+        cursor.execute(query, (start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')))
+        count = cursor.fetchone()[0]
 
+        return count

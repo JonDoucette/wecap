@@ -1,6 +1,6 @@
 from PyQt5 import QtCore
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView, QMenu, QAction
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QDateEdit, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView, QMenu, QAction, QApplication
 from PyQt5.QtCore import QDate, Qt
 from classes.item import Item
 
@@ -72,20 +72,27 @@ class PastSubmissionsScreen(QWidget):
     def contextMenuEvent(self, event):
         # Get the position relative to the table
         table_pos = self.past_table.mapFromParent(event.pos())
+        selected_rows = set(index.row() for index in self.past_table.selectedIndexes())
 
         # Adjust for the header height
         table_pos.setY(table_pos.y() - self.past_table.horizontalHeader().height())
 
         index = self.past_table.indexAt(table_pos)
         if index.isValid():
-            row = index.row()
+            isMultiple = len(selected_rows) > 1
 
             self.menu = QMenu(self)
-
             copy_action = QAction('Copy', self)
-            copy_action.triggered.connect(lambda: self.copyItem(row))
             delete_action = QAction('Delete', self)
-            delete_action.triggered.connect(lambda: self.deleteItem(row))
+
+            if isMultiple:
+                row = selected_rows
+                copy_action.triggered.connect(lambda: self.copy_multiple_items(row))
+                delete_action.triggered.connect(lambda: self.delete_multiple_items(row))
+            else:
+                row = index.row()
+                copy_action.triggered.connect(lambda: self.copy_item(row))
+                delete_action.triggered.connect(lambda: self.delete_item(row))
 
             self.menu.addAction(copy_action)
             self.menu.addAction(delete_action)
@@ -96,15 +103,23 @@ class PastSubmissionsScreen(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Delete:
-            row = self.past_table.currentRow()
-            self.deleteItem(row); 
+            selected_items = set(index.row() for index in self.past_table.selectedIndexes())
+            if len(selected_items) > 1:
+                self.delete_multiple_items(selected_items)
+            else:
+                row = self.past_table.currentRow()
+                self.delete_item(row); 
         if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
-            row = self.past_table.currentRow()
-            self.copyItem(row)
+            selected_items = set(index.row() for index in self.past_table.selectedIndexes())
+            if len(selected_items) > 1:
+                self.copy_multiple_items(selected_items)
+            else:
+                row = self.past_table.currentRow()
+                self.copyItem(row)
         else:
             super().keyPressEvent(event)
     
-    def deleteItem(self, row):
+    def delete_item(self, row):
         item = Item.from_table_row(self.past_table, row)
         self.past_table.removeRow(row)
 
@@ -115,6 +130,27 @@ class PastSubmissionsScreen(QWidget):
                 self.db_manager.delete_blocker(item.id)
             case _:
                 return
-    
-    def copyItem(self, row):
-        Item.from_table_row(self.past_table, row).copyItem()
+
+    def delete_multiple_items(self, row_list):
+        #Must track the number of deletions as the row count changes once deleting
+        ordered_row_list = sorted(row_list)
+        deletion_count = 0
+        for row in ordered_row_list:
+            row -= deletion_count
+            self.delete_item(row)
+            deletion_count += 1
+
+    def copy_item(self, row):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(
+        Item.from_table_row(self.past_table, row).getItemCopyString()
+        )
+
+    def copy_multiple_items(self, row_list):
+        string_to_copy = ''
+        for row in row_list:
+            string_to_copy += Item.from_table_row(self.past_table, row).getItemCopyString() + '\n'
+        clipboard = QApplication.clipboard()
+        clipboard.setText(string_to_copy)
+
+        

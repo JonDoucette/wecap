@@ -38,6 +38,9 @@ class Item:
         clipboard = QApplication.clipboard()
         clipboard.setText(text_to_copy)
 
+    def getItemCopyString(self):
+        return f"{self._date}\n{self._type}: {self._comment}"
+
     def __repr__(self):
         return f"Item(id={self._id}, date='{self._date}', type='{self._type}', comment='{self._comment}')"
 

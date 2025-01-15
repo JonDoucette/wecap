@@ -50,7 +50,7 @@ class CustomTitleBar(QWidget):
 
     def minimize_window(self):
         if self.parent:
-            self.parent.showMinimized()
+            self.parent.hide()
 
     def close_window(self):
         if self.parent:
