@@ -5,7 +5,7 @@ class SystemTray(QSystemTrayIcon):
     def __init__(self, icon_path, main_window):
         super().__init__(QIcon(icon_path), main_window)
         self.main_window = main_window
-        self.setToolTip("Wecap Reminder")
+        self.setToolTip("Wecap")
 
         # Create a context menu for the tray icon
         self.tray_menu = QMenu()

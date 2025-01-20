@@ -1,11 +1,10 @@
 import sys
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget,
     QTableWidgetItem, QStackedWidget, QVBoxLayout
 )
 from PyQt5.QtCore import Qt
-from stylesheet import STYLESHEET
+from wecap_linx_stylesheet import STYLESHEET
 
 from screens.main_screen import MainScreen
 from screens.past_submissions_screen import PastSubmissionsScreen
@@ -22,7 +21,7 @@ class GUIManager(QMainWindow):
     """
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Wecap")
+        self.setWindowTitle("Wecap - Linux")
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setGeometry(100, 100, 800, 600)
         self.init_ui()
@@ -131,7 +130,7 @@ def main():
     db_manager = DatabaseManager()
     app = QApplication(sys.argv)
     gui = GUIManager()
-    system_tray = SystemTray('assets/imgs/logo_no_background.png', gui) 
+    system_tray = SystemTray('assets/imgs/logo.png', gui) 
     notification_handler = NotificationHandler(gui, db_manager, system_tray)  
     notification_handler.check_and_notify(True)
     gui.show()
